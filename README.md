@@ -187,3 +187,36 @@ Be sure to follow the checklist when updating your information using this templa
 - [ ] Change the `name, description, author, keywords, homepage, repository and bugs` field in `package.json`
 
 And, enjoy :)
+
+## 🐳 Docker
+
+> This project is a fork of [Viact](https://github.com/MR-Mostafa/Viact) by Mostafa Rahmati, used here to practice containerizing a React app with Docker.
+
+Two Dockerfiles are included to demonstrate the difference between a basic setup and a multi-stage, production-optimized build.
+
+### Build & run (optimized — multi-stage)
+
+```bash
+docker build -t viact-app .
+docker run -d --name viact_container -p 6060:80 viact-app
+```
+
+App will be available at `http://localhost:6060`
+
+### Build & run (unoptimized — single-stage, for comparison)
+
+```bash
+docker build -t viact-app-dev -f Dockerfile.unoptimized .
+docker run -d --name viact_container_dev -p 7070:5173 viact-app-dev
+```
+
+App will be available at `http://localhost:7070`
+
+### Image size comparison
+
+| Dockerfile | Base strategy | Final image size |
+|---|---|---|
+| `Dockerfile.unoptimized` | Single-stage (`node:20-slim`, runs `yarn dev`) | ~722 MB |
+| `Dockerfile` | Multi-stage (build with Node, serve with `nginx:alpine`) | ~102 MB |
+
+The multi-stage build discards the Node build tools and `node_modules` from the final image, keeping only the compiled static files served by Nginx — about **7x smaller**.
